@@ -1,0 +1,17 @@
+
+
+/* === 从 styles.css v2 拆分迁入 === */
+        @keyframes dgOverlayIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes dgCardIn {
+            from { opacity:0; transform: translateY(50px) scale(0.86); filter: blur(12px); }
+            to { opacity:1; transform: translateY(0) scale(1); filter: blur(0); }
+        }
+
+        @keyframes dgBodyItemIn {
+            from { opacity:0; transform: translateY(14px); filter: blur(4px); }
+            to { opacity:1; transform: translateY(0); filter: blur(0); }
+        }
