@@ -1,0 +1,17 @@
+
+
+/* === 从 styles.css 拆分迁入 === */
+        #fortune-lenormand-modal {
+    z-index: 9999 !important; 
+        }
+
+        #fortune-sub-daily .tarot-face.tarot-back {
+            padding: 0 !important;
+            overflow: hidden !important;
+        }
+
+        #fortune-sub-daily .tarot-visual {
+            height: 100% !important;
+            width: 100% !important;
+            margin: 0 !important;
+        }
