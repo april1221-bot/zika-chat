@@ -1,0 +1,12 @@
+
+
+/* === 从 styles.css 拆分迁入 === */
+        #ann-card-toolbar {
+    display: none;
+    padding: 8px 14px 4px;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    border-bottom: 1px solid var(--border-color);
+    margin-bottom: 2px;
+        }
