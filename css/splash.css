@@ -1,0 +1,382 @@
+
+
+/* === 从 styles.css 拆分迁入 === */
+        #splash-declaration {
+            position: fixed;
+            inset: 0;
+            z-index: 999999;
+            background: #06060e;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-family: 'Noto Serif SC', serif;
+            overflow: hidden;
+            transition: opacity 0.9s ease;
+        }
+
+        #splash-declaration.splash-fade-out {
+            opacity: 0 !important;
+            pointer-events: none;
+        }
+
+        .splash-bg-stars {
+            position: absolute;
+            inset: 0;
+            pointer-events: none;
+        }
+
+        .splash-bg-stars span {
+            position: absolute;
+            border-radius: 50%;
+            background: #fff;
+            animation: splashTwinkle 3s infinite alternate;
+        }
+
+        .splash-glow-1 {
+            position: absolute;
+            width: 500px; height: 500px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(var(--accent-color-rgb,197,164,126), 0.1) 0%, transparent 65%);
+            top: 20%; left: 50%;
+            transform: translateX(-50%);
+            pointer-events: none;
+            animation: splashGlowPulse 6s ease-in-out infinite;
+        }
+
+        .splash-glow-2 {
+            position: absolute;
+            width: 300px; height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(120,100,200, 0.07) 0%, transparent 65%);
+            bottom: 15%; right: 10%;
+            pointer-events: none;
+            animation: splashGlowPulse 8s ease-in-out infinite reverse;
+        }
+
+        .splash-inner {
+            position: relative;
+            z-index: 2;
+            width: min(500px, 93vw);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            animation: splashInnerIn 0.7s cubic-bezier(0.22,1,0.36,1) both;
+        }
+
+        .splash-badge {
+            display: flex;
+            align-items: center;
+            gap: 7px;
+            background: rgba(var(--accent-color-rgb,197,164,126), 0.1);
+            border: 1px solid rgba(var(--accent-color-rgb,197,164,126), 0.22);
+            border-radius: 50px;
+            padding: 6px 16px;
+            margin-bottom: 20px;
+            font-size: 11px;
+            letter-spacing: 2px;
+            color: rgba(var(--accent-color-rgb,197,164,126), 0.8);
+        }
+
+        .splash-badge i { font-size: 10px; }
+
+        .splash-dots {
+            display: flex;
+            gap: 7px;
+            margin-bottom: 20px;
+        }
+
+        .splash-dot {
+            width: 5px; height: 5px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.15);
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4,0,0.2,1);
+        }
+
+        .splash-dot.active {
+            background: rgba(var(--accent-color-rgb,197,164,126), 0.85);
+            width: 20px;
+            border-radius: 3px;
+        }
+
+        .splash-dot.done {
+            background: rgba(var(--accent-color-rgb,197,164,126), 0.35);
+        }
+
+        .splash-card {
+            width: 100%;
+            background: linear-gradient(145deg, rgba(255,255,255,0.045) 0%, rgba(255,255,255,0.02) 100%);
+            border: 1px solid rgba(255,255,255,0.08);
+            border-radius: 24px;
+            padding: 0;
+            backdrop-filter: blur(30px);
+            -webkit-backdrop-filter: blur(30px);
+            box-shadow: 0 24px 60px rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.07);
+            overflow: hidden;
+        }
+
+        .splash-card-top-line {
+            height: 2px;
+            background: linear-gradient(90deg, transparent 0%, rgba(var(--accent-color-rgb,197,164,126),0.6) 40%, rgba(var(--accent-color-rgb,197,164,126),0.6) 60%, transparent 100%);
+        }
+
+        .splash-card-body {
+            padding: 28px 30px 26px;
+        }
+
+        .splash-slides {
+            position: relative;
+            overflow: hidden;
+            min-height: 200px;
+        }
+
+        .splash-slide {
+            position: absolute;
+            inset: 0;
+            opacity: 0;
+            transform: translateX(28px);
+            transition: opacity 0.4s ease, transform 0.4s cubic-bezier(0.4,0,0.2,1);
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .splash-slide.active {
+            opacity: 1;
+            transform: translateX(0);
+            pointer-events: all;
+            position: relative;
+        }
+
+        .splash-slide.exit-left {
+            opacity: 0;
+            transform: translateX(-28px);
+            position: absolute;
+        }
+
+        .splash-slide-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 10px;
+            letter-spacing: 2.5px;
+            color: rgba(var(--accent-color-rgb,197,164,126), 0.65);
+            margin-bottom: 10px;
+        }
+
+        .splash-slide-tag::before {
+            content: '';
+            display: inline-block;
+            width: 16px; height: 1px;
+            background: rgba(var(--accent-color-rgb,197,164,126), 0.5);
+        }
+
+        .splash-slide-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: rgba(255,255,255,0.92);
+            margin-bottom: 18px;
+            line-height: 1.35;
+        }
+
+        .splash-slide-body {
+            font-size: 13.5px;
+            line-height: 2;
+            color: rgba(255,255,255,0.5);
+        }
+
+        .splash-slide-body em {
+            color: rgba(var(--accent-color-rgb,197,164,126), 0.85);
+            font-style: normal;
+        }
+
+        .splash-slide-body strong {
+            color: rgba(255,255,255,0.78);
+            font-weight: 600;
+        }
+
+        .splash-slide-body .splash-highlight-box {
+            margin-top: 14px;
+            padding: 12px 16px;
+            background: rgba(var(--accent-color-rgb,197,164,126), 0.07);
+            border-left: 2px solid rgba(var(--accent-color-rgb,197,164,126), 0.45);
+            border-radius: 0 8px 8px 0;
+            font-size: 12.5px;
+            color: rgba(255,255,255,0.55);
+            line-height: 1.8;
+        }
+
+        .splash-pledge-desc {
+            font-size: 12.5px;
+            color: rgba(255,255,255,0.4);
+            margin-bottom: 16px;
+            line-height: 1.8;
+        }
+
+        .splash-pledge-required {
+            width: 100%;
+            background: rgba(var(--accent-color-rgb,197,164,126), 0.08);
+            border: 1px dashed rgba(var(--accent-color-rgb,197,164,126), 0.4);
+            border-radius: 10px;
+            padding: 12px 16px;
+            font-size: 14px;
+            font-family: 'Noto Serif SC', serif;
+            color: rgba(var(--accent-color-rgb,197,164,126), 0.85);
+            text-align: center;
+            margin-bottom: 14px;
+            line-height: 1.7;
+            cursor: text;
+            user-select: all;
+            -webkit-user-select: all;
+        }
+
+        .splash-pledge-input {
+            width: 100%;
+            background: rgba(255,255,255,0.04);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 13px 16px;
+            font-size: 14px;
+            color: rgba(255,255,255,0.85);
+            font-family: 'Noto Serif SC', serif;
+            outline: none;
+            transition: border-color 0.3s, box-shadow 0.3s;
+            text-align: center;
+            caret-color: rgba(var(--accent-color-rgb,197,164,126), 0.9);
+            box-sizing: border-box;
+        }
+
+        .splash-pledge-input:focus {
+            border-color: rgba(var(--accent-color-rgb,197,164,126), 0.5);
+            box-shadow: 0 0 0 3px rgba(var(--accent-color-rgb,197,164,126), 0.08);
+        }
+
+        .splash-pledge-input.correct {
+            border-color: rgba(100,200,120,0.6);
+            box-shadow: 0 0 0 3px rgba(100,200,120,0.08);
+            color: #a5d6a7;
+        }
+
+        .splash-pledge-hint {
+            font-size: 11.5px;
+            color: rgba(255,255,255,0.36);
+            text-align: center;
+            margin-top: 10px;
+            min-height: 17px;
+            transition: color 0.3s;
+            letter-spacing: 0.5px;
+        }
+
+        .splash-pledge-hint.ok { color: rgba(120,210,140,0.8); }
+
+        .splash-divider {
+            height: 1px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.07), transparent);
+            margin: 22px 0;
+        }
+
+        .splash-footer {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 30px 24px;
+        }
+
+        .splash-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 10px 22px;
+            border-radius: 50px;
+            cursor: pointer;
+            font-family: 'Noto Serif SC', serif;
+            font-size: 13px;
+            font-weight: 400;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .splash-btn i { font-size: 10px; }
+
+        .splash-btn-ghost {
+            background: transparent;
+            color: rgba(255,255,255,0.3);
+            border: 1px solid rgba(255,255,255,0.09);
+        }
+
+        .splash-btn-ghost:hover, .splash-btn-ghost:active {
+            color: rgba(255,255,255,0.6);
+            border-color: rgba(255,255,255,0.18);
+            background: rgba(255,255,255,0.04);
+        }
+
+        .splash-btn-ghost:disabled {
+            opacity: 0.25;
+            cursor: default;
+            pointer-events: none;
+        }
+
+        .splash-btn-next {
+            background: rgba(var(--accent-color-rgb,197,164,126), 0.12);
+            color: rgba(var(--accent-color-rgb,197,164,126), 0.9);
+            border: 1px solid rgba(var(--accent-color-rgb,197,164,126), 0.28);
+        }
+
+        .splash-btn-next:hover, .splash-btn-next:active {
+            background: rgba(var(--accent-color-rgb,197,164,126), 0.22);
+        }
+
+        .splash-btn-enter {
+            background: rgba(var(--accent-color-rgb,197,164,126), 0.18);
+            color: rgba(var(--accent-color-rgb,197,164,126), 0.5);
+            border: 1px solid rgba(var(--accent-color-rgb,197,164,126), 0.2);
+            cursor: default;
+            transition: all 0.4s ease;
+        }
+
+        .splash-btn-enter.ready {
+            background: rgba(var(--accent-color-rgb,197,164,126), 0.9);
+            color: #fff;
+            border-color: transparent;
+            cursor: pointer;
+            box-shadow: 0 4px 20px rgba(var(--accent-color-rgb,197,164,126), 0.35);
+        }
+
+        .splash-btn-enter.ready:hover, .splash-btn-enter.ready:active {
+            background: rgba(var(--accent-color-rgb,197,164,126), 1);
+            box-shadow: 0 6px 28px rgba(var(--accent-color-rgb,197,164,126), 0.5);
+        }
+
+        .splash-page-num {
+            font-size: 11px;
+            color: rgba(255,255,255,0.2);
+            letter-spacing: 1.5px;
+            min-width: 36px;
+            text-align: center;
+        }
+
+/* === 从 styles.css v2 拆分迁入 === */
+        @keyframes splashTwinkle {
+            from { opacity: 0.15; }
+            to   { opacity: 0.85; }
+        }
+
+        @keyframes splashGlowPulse {
+            0%,100%{ opacity: 0.7; transform: translateX(-50%) scale(1); }
+            50%    { opacity: 1;   transform: translateX(-50%) scale(1.15); }
+        }
+
+        @keyframes splashInnerIn {
+            from { opacity:0; transform:translateY(24px); }
+            to   { opacity:1; transform:translateY(0); }
+        }
+
+        @keyframes splashShake {
+            0%,100%{transform:translateX(0)}
+            20%{transform:translateX(-7px)}
+            60%{transform:translateX(7px)}
+            80%{transform:translateX(-4px)}
+        }
