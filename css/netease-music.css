@@ -1,0 +1,299 @@
+/* ============================================================
+   网易云音乐悬浮窗（APlayer + MetingJS API）
+   - 从"更多"菜单点击"网易音乐"打开
+   - 可拖拽、可最小化、可关闭
+   - 通过 MetingJS API 解析歌单，APlayer 播放
+   - 位置记忆在 localStorage
+   ============================================================ */
+
+/* ── 悬浮窗容器 ── */
+#netease-music-widget {
+    position: fixed;
+    z-index: 9000;
+    width: 340px;
+    max-width: 92vw;
+    background: var(--primary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.18);
+    overflow: hidden;
+    flex-direction: column;
+    transition: opacity 0.25s ease, transform 0.25s ease, visibility 0.25s;
+    opacity: 0;
+    visibility: hidden;
+    transform: scale(0.92) translateY(10px);
+    pointer-events: none;
+}
+#netease-music-widget.nm-visible {
+    display: flex;
+    opacity: 1;
+    visibility: visible;
+    transform: scale(1) translateY(0);
+    pointer-events: auto;
+}
+
+/* ── 标题栏（拖拽手柄） ── */
+.nm-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    background: linear-gradient(135deg, #C20C0C, #E83535);
+    cursor: grab;
+    user-select: none;
+    -webkit-user-select: none;
+    flex-shrink: 0;
+}
+.nm-header:active {
+    cursor: grabbing;
+}
+.nm-header-icon {
+    width: 22px;
+    height: 22px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #fff;
+    font-size: 14px;
+    flex-shrink: 0;
+}
+.nm-header-title {
+    flex: 1;
+    color: #fff;
+    font-size: 13px;
+    font-weight: 700;
+    font-family: var(--font-family);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    letter-spacing: 0.3px;
+}
+.nm-header-btns {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex-shrink: 0;
+}
+.nm-header-btn {
+    width: 24px;
+    height: 24px;
+    border: none;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.18);
+    color: #fff;
+    font-size: 11px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s;
+    padding: 0;
+}
+.nm-header-btn:hover {
+    background: rgba(255, 255, 255, 0.35);
+}
+.nm-header-btn:active {
+    background: rgba(255, 255, 255, 0.5);
+}
+
+/* ── 播放器区域 ── */
+.nm-body {
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+    position: relative;
+}
+#nm-aplayer {
+    width: 100%;
+}
+/* APlayer 容器内部微调，去掉 APlayer 自带的圆角和外边框，让它融入悬浮窗 */
+#nm-aplayer .aplayer {
+    margin: 0;
+    border-radius: 0;
+    box-shadow: none;
+}
+
+/* ── 加载/错误状态覆盖层 ── */
+.nm-overlay {
+    position: absolute;
+    inset: 0;
+    background: var(--primary-bg);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    z-index: 5;
+    transition: opacity 0.2s;
+}
+.nm-overlay.nm-hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+.nm-spinner {
+    width: 28px;
+    height: 28px;
+    border: 3px solid var(--border-color);
+    border-top-color: #C20C0C;
+    border-radius: 50%;
+    animation: nmSpin 0.7s linear infinite;
+}
+@keyframes nmSpin {
+    to { transform: rotate(360deg); }
+}
+.nm-overlay-text {
+    font-size: 12px;
+    color: var(--text-secondary);
+    font-family: var(--font-family);
+}
+.nm-retry-btn {
+    padding: 6px 16px;
+    border: 1.5px solid #C20C0C;
+    border-radius: 8px;
+    background: transparent;
+    color: #C20C0C;
+    font-size: 12px;
+    cursor: pointer;
+    font-family: var(--font-family);
+    transition: background 0.15s, color 0.15s;
+}
+.nm-retry-btn:hover {
+    background: #C20C0C;
+    color: #fff;
+}
+
+/* ── 底部工具栏 ── */
+.nm-footer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px;
+    background: var(--secondary-bg);
+    border-top: 1px solid var(--border-color);
+    flex-shrink: 0;
+}
+.nm-playlist-select {
+    flex: 1;
+    min-width: 0;
+    padding: 6px 8px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--primary-bg);
+    color: var(--text-primary);
+    font-size: 12px;
+    font-family: var(--font-family);
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%237a7a7a' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 8px center;
+    padding-right: 24px;
+}
+.nm-playlist-select:focus {
+    border-color: var(--accent-color);
+}
+.nm-open-full {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 6px 10px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--primary-bg);
+    color: var(--text-secondary);
+    font-size: 11px;
+    font-family: var(--font-family);
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 0.15s, border-color 0.15s;
+    flex-shrink:0;
+}
+.nm-open-full:hover {
+    color: var(--accent-color);
+    border-color: var(--accent-color);
+}
+
+/* ── 最小化状态 ── */
+#netease-music-widget.nm-minimized .nm-body,
+#netease-music-widget.nm-minimized .nm-footer {
+    display: none;
+}
+#netease-music-widget.nm-minimized {
+    width: 200px;
+    max-width: 60vw;
+}
+
+/* ── 自定义歌单输入弹层 ── */
+.nm-custom-popup {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 0;
+    right: 0;
+    background: var(--secondary-bg);
+    border: 1px solid var(--border-color);
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+    z-index: 10;
+    display: none;
+}
+.nm-custom-popup.nm-show {
+    display: block;
+}
+.nm-custom-popup label {
+    display: block;
+    font-size: 11px;
+    color: var(--text-secondary);
+    font-weight: 700;
+    letter-spacing: 0.4px;
+    margin-bottom: 6px;
+}
+.nm-custom-input-row {
+    display: flex;
+    gap: 6px;
+}
+.nm-custom-input-row input {
+    flex: 1;
+    min-width: 0;
+    padding: 7px 10px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--primary-bg);
+    color: var(--text-primary);
+    font-size: 12px;
+    font-family: var(--font-family);
+    outline: none;
+}
+.nm-custom-input-row input:focus {
+    border-color: var(--accent-color);
+}
+.nm-custom-input-row button {
+    padding: 7px 14px;
+    border: none;
+    border-radius: 8px;
+    background: #C20C0C;
+    color: #fff;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.nm-custom-input-row button:active {
+    opacity: 0.8;
+}
+
+/* ── 移动端适配 ── */
+@media (max-width: 480px) {
+    #netease-music-widget {
+        width: 92vw;
+    }
+}
+
+/* ── 深色模式 ── */
+html[data-theme="dark"] #netease-music-widget {
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.5);
+}
