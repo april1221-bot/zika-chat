@@ -86,7 +86,9 @@
               if (typeof window._surveyOpenListModal === 'function') window._surveyOpenListModal();
               else if (typeof showNotification === 'function') showNotification('问卷功能加载中，请稍后', 'info');
           }
-        }
+        },
+        // 网易云音乐悬浮窗：占位项，由 js/features/netease-music.js 注册升级为真实功能
+        { id: 'netease-music', iconClass: 'fas fa-music', label: '网易音乐', ready: false }
         // { id: 'xiaohongshu', iconClass: 'fas fa-book', label: '小红书', ready: false },
         // { id: 'douyin', iconClass: 'fab fa-tiktok', label: '抖音', ready: false }
     ];
