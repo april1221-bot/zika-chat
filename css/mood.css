@@ -1,0 +1,402 @@
+
+
+/* === 从 styles.css 拆分迁入 === */
+        .mood-selector-card {
+            border-radius: 22px !important;
+            box-shadow: 0 16px 48px rgba(0,0,0,0.22) !important;
+        }
+
+        .mood-detail-dot {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 20px !important; 
+        height: 20px !important;
+        border-radius: 50% !important; 
+        padding: 0 !important;
+        margin: 1px auto !important; 
+        font-size: 12px !important;
+        line-height: 1 !important;
+        overflow: hidden;
+    }
+
+        .mood-text-span {
+        display: none;
+    }
+
+ .mood-kaomoji-span {
+        display: block;
+        transform: scale(0.9);
+    }
+
+    .mood-dots-container {
+        flex-direction: row !important;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 2px;
+    }
+
+        .mood-detail-dot {
+    width: 100%;
+    border-radius: 4px;
+    padding: 2px;
+    font-size: 10px;
+    text-align: center;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+    transform: scale(0.9); 
+        }
+
+        .mood-detail-dot.partner-mood {
+    opacity: 0.9;
+    border: 1px dashed rgba(255,255,255,0.5); 
+        }
+
+        .mood-dots {
+    display: flex;
+    gap: 2px;
+    margin-top: 2px;
+    justify-content: center;
+    flex-wrap: wrap;
+    width: 100%;
+        }
+
+        .mood-marker {
+    font-size: 10px;
+    width: 16px; 
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    background-color: var(--secondary-bg);
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .mood-marker.me { color: var(--accent-color); border: 1px solid rgba(var(--accent-color-rgb), 0.3); }
+
+        .mood-marker.partner { color: #ff6b6b; border: 1px solid rgba(255, 107, 107, 0.3); }
+
+        .mood-selector-overlay {
+    position: fixed;
+    top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5);
+    z-index: 2100;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(2px);
+        }
+
+        .mood-selector-overlay.active { display: flex; animation: fadeIn 0.3s ease; }
+
+        .mood-selector-card {
+    background: var(--secondary-bg);
+    padding: 20px;
+    border-radius: 16px;
+    width: 90%;
+    max-width: 360px;
+    text-align: center;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    animation: zoomIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+        }
+
+        .mood-options-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 12px;
+        }
+
+        .mood-options-slider-wrapper {
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    max-height: 240px;
+    padding-right: 2px;
+        }
+
+        .mood-options-slider-wrapper::-webkit-scrollbar { display:none; }
+
+        .mood-options-slider-wrapper .mood-options-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 8px;
+    margin-top: 8px;
+    width: 100%;
+        }
+
+        .mood-page-btn {
+    background: var(--border-color);
+    border: none;
+    border-radius: 50%;
+    width: 30px; height: 30px;
+    font-size: 18px;
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    transition: background 0.2s;
+    padding: 0 0 2px 0;
+    flex-shrink: 0;
+        }
+
+        .mood-page-btn:hover { background: var(--accent-color); color: #fff; }
+
+        .mood-page-btn:disabled { opacity: 0.3; cursor: not-allowed; }
+
+        .mood-tab-btn {
+    background: var(--border-color);
+    border: none;
+    border-radius: 20px;
+    padding: 6px 16px;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--text-secondary);
+    transition: all 0.2s;
+    font-family: var(--font-family);
+    font-weight: 500;
+        }
+
+        .mood-tab-btn.active {
+    background: var(--accent-color);
+    color: #fff;
+    box-shadow: 0 2px 8px rgba(var(--accent-color-rgb), 0.35);
+        }
+
+        .mood-custom-add-btn {
+    margin-top: 10px;
+    width: 100%;
+    background: none;
+    border: 1px dashed var(--border-color);
+    border-radius: 8px;
+    padding: 6px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    font-family: var(--font-family);
+    transition: all 0.2s;
+        }
+
+        .mood-custom-add-btn:hover { border-color: var(--accent-color); color: var(--accent-color); }
+
+        .mood-option-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 4px;
+    border: 1.5px solid var(--border-color);
+    border-radius: 12px;
+    background: var(--primary-bg);
+    cursor: pointer;
+    transition: all 0.2s;
+    min-height: 58px;
+    position: relative;
+        }
+
+        .mood-option-btn:hover {
+    transform: translateY(-2px);
+    background: var(--accent-color);
+    color: #fff;
+    border-color: var(--accent-color);
+    box-shadow: 0 4px 10px rgba(var(--accent-color-rgb), 0.3);
+        }
+
+        .mood-kaomoji { font-size: 20px; margin-bottom: 4px; white-space: nowrap; line-height: 1; }
+
+        .mood-label { font-size: 11px; opacity: 0.75; font-weight: 500; }
+
+        .mood-custom-actions {
+    position: absolute;
+    top: 2px; right: 2px;
+    display: none;
+    gap: 2px;
+    background: rgba(var(--secondary-bg-rgb), 0.9);
+    border-radius: 6px;
+    padding: 2px;
+        }
+
+        .mood-option-custom:hover .mood-custom-actions { display: flex; }
+
+        .mood-custom-action-btn {
+    border: none; background: none; cursor: pointer;
+    font-size: 11px; padding: 2px 3px; border-radius: 4px;
+    line-height: 1;
+    transition: background 0.15s;
+        }
+
+        .mood-custom-action-btn:hover { background: var(--border-color); }
+
+        #mood-modal .modal-content {
+    background-color: var(--primary-bg);
+    max-height: 90vh;
+        }
+
+        .mood-stats-bar {
+    height: 12px !important; 
+    border-radius: 6px !important;
+    background: #eee !important;
+    margin: 10px 0 20px 0 !important;
+    box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+
+        .mood-stat-segment { height: 100%; transition: width 0.5s; }
+
+        .mood-detail-dot {
+    width: 100%;
+    border-radius: 6px;
+    padding: 2px 4px;
+    font-size: 10px;
+    margin-top: 2px;
+    text-align: center;
+    color: #fff;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    text-shadow: 0 1px 1px rgba(0,0,0,0.2);
+        }
+
+        .mood-input-wrapper {
+    width: 100%;
+    margin-top: 15px;
+    text-align: left;
+        }
+
+        .mood-note-input {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    background: var(--primary-bg);
+    color: var(--text-primary);
+    resize: none;
+    font-size: 13px;
+    margin-top: 8px;
+        }
+
+        .mood-stats-card {
+    background: var(--secondary-bg);
+    border-radius: 16px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+    border: 1px solid var(--border-color);
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+        }
+
+        .mood-stats-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    color: var(--text-secondary);
+    border-bottom: 1px dashed var(--border-color);
+    padding-bottom: 10px;
+        }
+
+        .mood-circles-wrapper {
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    padding: 10px 0;
+        }
+
+        .mood-circle-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    position: relative;
+        }
+
+        .mood-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    background: conic-gradient(var(--accent-color) var(--percent), var(--message-received-bg) 0);
+    transition: all 0.5s ease;
+        }
+
+        .mood-circle::before {
+    content: "";
+    position: absolute;
+    width: 52px;
+    height: 52px;
+    background-color: var(--secondary-bg);
+    border-radius: 50%;
+        }
+
+        .mood-circle-text {
+    position: absolute;
+    z-index: 2;
+    font-weight: 700;
+    font-size: 14px;
+    color: var(--text-primary);
+        }
+
+        .mood-circle-label {
+    font-size: 12px;
+    color: var(--text-secondary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+        }
+
+        .mood-bar-container {
+    height: 8px;
+    width: 100%;
+    background-color: var(--message-received-bg);
+    border-radius: 4px;
+    overflow: hidden;
+    display: flex;
+    margin-top: 5px;
+        }
+
+        .mood-bar-segment {
+    height: 100%;
+    transition: width 0.6s ease;
+        }
+
+        .mood-view-section {
+    display: block;
+    animation: fadeIn 0.3s ease;
+        }
+
+        .mood-view-section.hidden-view {
+    display: none;
+        }
+
+        .mood-header-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--border-color);
+        }
+
+        .mood-stat-group {
+    margin-bottom: 20px;
+    background: var(--primary-bg);
+    padding: 15px;
+    border-radius: 12px;
+        }
+
+        .mood-stat-title {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+        }
