@@ -30,7 +30,7 @@
             --radius: 18px;
             --radius-sm: 14px;
             --radius-xs: 10px;
-            --font-family: 'Noto Serif SC', serif;
+            --font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'STSong', 'SimSun', '宋体', serif;
             --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
             --font-size: 16px;
             --favorite-color: #ffc107;
@@ -40,7 +40,7 @@
             --primary-bg-rgb: 249, 249, 249;
             --secondary-bg-rgb: 255, 255, 255;
             --bubble-style: 'standard';
-            --message-font-family: 'Noto Serif SC', serif;
+            --message-font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'STSong', 'SimSun', '宋体', serif;
             --message-font-weight: 400;
             --message-line-height: 1.5;
             --in-chat-avatar-size: 36px;
@@ -379,7 +379,7 @@
         overflow: hidden;
         text-overflow: ellipsis;
         font-size: 10px;
-        font-family: 'Inter', 'Noto Serif SC', 'Cormorant Garamond', serif, -apple-system, BlinkMacSystemFont, sans-serif;
+        font-family: var(--font-family);
         font-weight: 350;
         letter-spacing: 3px;
         font-style: normal;
@@ -3304,7 +3304,7 @@
         }
 
         .welcome-title-glitch {
-            font-family: 'Noto Serif SC', serif;
+            font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'STSong', 'SimSun', '宋体', serif;
             font-size: 40px; font-weight: 700;
             letter-spacing: 10px;
             color: #ffffff;
@@ -3975,7 +3975,7 @@
             flex-direction: column;
             align-items: center;
             justify-content: center;
-            font-family: 'Noto Serif SC', serif;
+            font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'STSong', 'SimSun', '宋体', serif;
             border: 8px solid rgba(255, 255, 255, 0.2);
             box-shadow: inset 0 0 20px rgba(0,0,0,0.05);
         }
@@ -4034,7 +4034,7 @@
         }
 
         .coin-result-text {
-            font-family: 'Noto Serif SC', serif;
+            font-family: 'Noto Serif SC', 'Source Han Serif SC', 'Songti SC', 'STSong', 'SimSun', '宋体', serif;
             font-size: 15px;
             color: #fff;
             font-weight: 300;
