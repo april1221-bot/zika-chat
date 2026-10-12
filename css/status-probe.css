@@ -1,0 +1,290 @@
+/* ============================================================
+   状态探测 (status-probe) v3
+   - 三项5格信号：链接强弱 / 他的状态 / 他有空吗
+   - 位置感知区域：感知描述 + 当前位置 + 时间线 + 感知按钮
+   - 顶部气泡弹窗（感知成功时弹出，3秒消失）
+   - 手动"重新探测"按钮（15分钟CD）+ "感知一下"按钮（独立15分钟CD）
+   ============================================================ */
+
+.sp-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    padding: 4px 0 8px;
+}
+
+.sp-item {
+    background: var(--secondary-bg);
+    border-radius: 12px;
+    padding: 14px 16px;
+}
+
+.sp-item-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.sp-item-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+.sp-item-title i {
+    color: var(--accent-color);
+    font-size: 15px;
+    width: 18px;
+    text-align: center;
+}
+
+/* 信号格容器：5个竖条从矮到高 */
+.sp-signal {
+    display: flex;
+    align-items: flex-end;
+    gap: 3px;
+    height: 20px;
+}
+
+.sp-bar {
+    width: 4px;
+    background: var(--border-color);
+    border-radius: 1px;
+    transition: background 0.3s ease;
+}
+
+.sp-bar:nth-child(1) { height: 6px; }
+.sp-bar:nth-child(2) { height: 9px; }
+.sp-bar:nth-child(3) { height: 12px; }
+.sp-bar:nth-child(4) { height: 15px; }
+.sp-bar:nth-child(5) { height: 18px; }
+
+.sp-bar.active {
+    background: var(--accent-color);
+}
+
+.sp-text {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+.sp-note {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    line-height: 1.7;
+    margin-top: 16px;
+    padding: 10px 12px;
+    background: var(--primary-bg);
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+}
+
+/* 手动重新探测按钮（全宽，放说明下面） */
+.sp-manual-refresh-btn {
+    width: 100%;
+    padding: 10px;
+    margin-top: 12px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--accent-color);
+    border-radius: 10px;
+    background: rgba(var(--accent-color-rgb), 0.08);
+    color: var(--accent-color);
+    cursor: pointer;
+    font-family: var(--font-family);
+    transition: opacity 0.2s, transform 0.15s;
+}
+
+.sp-manual-refresh-btn:hover:not(:disabled) {
+    opacity: 0.85;
+}
+
+.sp-manual-refresh-btn:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.sp-manual-refresh-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    border-color: var(--border-color);
+    color: var(--text-tertiary);
+    background: var(--secondary-bg);
+}
+
+/* ============================================================
+   位置感知区域
+   ============================================================ */
+
+.sp-loc {
+    margin-top: 18px;
+    padding: 14px 16px;
+    background: var(--secondary-bg);
+    border-radius: 12px;
+    border: 1px solid var(--border-color);
+}
+
+.sp-loc-head {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+}
+
+/* 呼吸光点（仿 mochi loc-sense-dot） */
+.sp-loc-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-color);
+    box-shadow: 0 0 6px var(--accent-color);
+    animation: sp-loc-breath 2.4s ease-in-out infinite;
+}
+
+@keyframes sp-loc-breath {
+    0%, 100% { opacity: 0.4; transform: scale(0.85); }
+    50%      { opacity: 1;   transform: scale(1.15); }
+}
+
+.sp-loc-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--text-primary);
+}
+
+/* 感知描述文案 */
+.sp-loc-sense {
+    font-size: 13px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+    margin-bottom: 10px;
+    font-style: italic;
+}
+
+/* 当前位置展示 */
+.sp-loc-cur {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    background: var(--primary-bg);
+    border-radius: 8px;
+    margin-bottom: 10px;
+}
+
+.sp-loc-cur-text {
+    font-size: 13px;
+    color: var(--text-primary);
+    font-weight: 500;
+}
+
+.sp-loc-cur-time {
+    font-size: 11px;
+    color: var(--text-tertiary);
+}
+
+/* 位置时间线 */
+.sp-loc-timeline {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin-bottom: 8px;
+    max-height: 140px;
+    overflow-y: auto;
+}
+
+.sp-loc-tl-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 4px 0;
+    font-size: 11.5px;
+}
+
+.sp-loc-tl-time {
+    color: var(--text-tertiary);
+    flex-shrink: 0;
+    width: 36px;
+}
+
+.sp-loc-tl-text {
+    color: var(--text-secondary);
+}
+
+.sp-loc-more {
+    font-size: 11px;
+    color: var(--text-tertiary);
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+/* 感知一下按钮 */
+.sp-sense-btn {
+    width: 100%;
+    padding: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid var(--accent-color);
+    border-radius: 10px;
+    background: rgba(var(--accent-color-rgb), 0.12);
+    color: var(--accent-color);
+    cursor: pointer;
+    font-family: var(--font-family);
+    transition: opacity 0.2s, transform 0.15s;
+}
+
+.sp-sense-btn:hover:not(:disabled) {
+    opacity: 0.85;
+}
+
+.sp-sense-btn:active:not(:disabled) {
+    transform: scale(0.98);
+}
+
+.sp-sense-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    border-color: var(--border-color);
+    color: var(--text-tertiary);
+    background: var(--secondary-bg);
+}
+
+/* ============================================================
+   顶部气泡弹窗（感知成功时弹出，仿 mochi loc-change-bubble）
+   - 固定定位在屏幕顶部居中
+   - 黑色半透明背景 + 白色文字
+   - 淡入 → 显示3秒 → 淡出
+   ============================================================ */
+
+.sp-loc-bubble {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%) translateY(-20px);
+    background: rgba(0, 0, 0, 0.85);
+    color: #fff;
+    padding: 12px 20px;
+    border-radius: 24px;
+    font-size: 13.5px;
+    font-weight: 500;
+    font-family: var(--font-family);
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    z-index: 10000;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    max-width: 90vw;
+    text-align: center;
+    line-height: 1.5;
+    /* 深色模式下加白色细边框区分 */
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.sp-loc-bubble.sp-loc-bubble-show {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+}
