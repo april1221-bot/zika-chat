@@ -1247,6 +1247,28 @@ function createMessageFragment(msg, prevMsg, nextMsg, lastSenderRef) {
         return fragment;
     }
 
+    // 互动表情消息（骰子/猜拳）
+    if (msg.type === 'game') {
+        const gameDiv = document.createElement('div');
+        gameDiv.className = 'game-emoji-message ' + (msg.sender === 'user' ? 'sent' : 'received');
+        gameDiv.dataset.id = msg.id;
+        gameDiv.dataset.msgId = msg.id;
+        let emojiHTML = '';
+        if (msg.gameType === 'dice') {
+            const faces = ['⚀','⚁','⚂','⚃','⚄','⚅'];
+            const face = faces[(msg.gameValue - 1)] || '⚀';
+            emojiHTML = '<div class="game-dice game-anim" data-final="' + face + '">' + face + '</div>';
+        } else if (msg.gameType === 'rps') {
+            const map = { rock: '✊', scissors: '✌️', paper: '🖐️' };
+            const emoji = map[msg.gameValue] || '✊';
+            emojiHTML = '<div class="game-rps game-anim" data-final="' + emoji + '">' + emoji + '</div>';
+        }
+        gameDiv.innerHTML = '<div class="game-emoji-bubble">' + emojiHTML + '</div>';
+        fragment.appendChild(gameDiv);
+        lastSenderRef.current = 'system';
+        return fragment;
+    }
+
     let showTimestamp = true;
     if (settings.timeFormat === 'off') {
         showTimestamp = false;
@@ -2605,6 +2627,19 @@ if (!isBatchMode && type === 'normal') {
             return true;
         };
 
+        // 猜拳输赢判定
+        function _judgeRPS(user, partner) {
+            const map = { rock: '石头', scissors: '剪刀', paper: '布' };
+            const myName = (typeof settings !== 'undefined' && settings.myName) ? settings.myName : '我';
+            const partnerName = (typeof settings !== 'undefined' && settings.partnerName) ? settings.partnerName : '对方';
+            if (user === partner) return myName + ' 和 ' + partnerName + ' 都出了' + map[user] + '，平局！';
+            const wins = { rock: 'scissors', scissors: 'paper', paper: 'rock' };
+            if (wins[user] === partner) {
+                return myName + '出了' + map[user] + '，' + partnerName + '出了' + map[partner] + '。' + myName + '赢了！🎉';
+            } else {
+                return myName + '出了' + map[user] + '，' + partnerName + '出了' + map[partner] + '。' + partnerName + '赢了～';
+            }
+        }
         window.simulateReply = function() {
             function showTypingIndicator() {
                 if (!settings.typingIndicatorEnabled) return;
@@ -2665,6 +2700,76 @@ if (partnerPersonas && partnerPersonas.length > 0 && Math.random() < 0.3) {
                 window.ThrowEgg.partnerThrow();
             }
             if (_doPoke || _doThrow) return;
+
+            // ── 猜拳彩蛋：用户发猜拳后对方下一条必定是猜拳 ──
+            // 跟随系统节奏排队（到这里说明已经过了 replyDelay 等待），不抢正在输入的字卡
+            if (window._pendingRockPaper) {
+                window._pendingRockPaper = false;
+                const choices = ['rock', 'scissors', 'paper'];
+                const value = choices[Math.floor(Math.random() * 3)];
+                const partnerName = settings.partnerName || '对方';
+                const myName = settings.myName || '我';
+                // 找用户上次出的拳
+                const userLastRps = [...messages].reverse().find(function (m) {
+                    return m.type === 'game' && m.gameType === 'rps' && m.sender === myName;
+                });
+                addMessage({
+                    id: Date.now() + Math.random(),
+                    sender: partnerName,
+                    text: '',
+                    timestamp: new Date(),
+                    type: 'game',
+                    gameType: 'rps',
+                    gameValue: value,
+                    status: 'received'
+                });
+                // 判定输赢
+                if (userLastRps) {
+                    const result = _judgeRPS(userLastRps.gameValue, value);
+                    setTimeout(function () {
+                        addMessage({
+                            id: Date.now() + Math.random() + 1,
+                            text: result,
+                            timestamp: new Date(),
+                            type: 'system'
+                        });
+                    }, 600);
+                }
+                if (typeof playSound === 'function') playSound('poke');
+                return;
+            }
+
+            // ── 对方随机发互动表情（骰子/猜拳），各 3% 概率，和拍一拍独立 ──
+            const _doDice = Math.random() < 0.03;
+            const _doRps  = Math.random() < 0.03;
+            if (_doDice || _doRps) {
+                const gameType = _doDice ? 'dice' : 'rps';
+                const partnerName = settings.partnerName || '对方';
+                if (gameType === 'dice') {
+                    const v = 1 + Math.floor(Math.random() * 6);
+                    addMessage({
+                        id: Date.now() + Math.random(),
+                        sender: partnerName,
+                        text: '',
+                        timestamp: new Date(),
+                        type: 'game', gameType: 'dice', gameValue: v,
+                        status: 'received'
+                    });
+                } else {
+                    const choices = ['rock', 'scissors', 'paper'];
+                    const v = choices[Math.floor(Math.random() * 3)];
+                    addMessage({
+                        id: Date.now() + Math.random(),
+                        sender: partnerName,
+                        text: '',
+                        timestamp: new Date(),
+                        type: 'game', gameType: 'rps', gameValue: v,
+                        status: 'received'
+                    });
+                }
+                if (typeof playSound === 'function') playSound('poke');
+                return;
+            }
 
             // ── 梦角主动发红包：跟上面拍一拍是完全独立的两套判定，互不影响——
             // 不 return，不影响这次正常回复照常生成；异步调用，不 await，不拖慢/阻塞回复流程，
