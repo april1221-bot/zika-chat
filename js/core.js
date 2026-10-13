@@ -511,6 +511,24 @@ const loadData = async () => {
             messages = savedMessages.map(m => ({
                 ...m, timestamp: new Date(m.timestamp)
             }));
+            // 检查紧急备份是否比 localforage 的消息更多（移动浏览器重建 WebView 时，
+//            // 最新消息可能只在 localStorage 备份里、还没写入 localforage）
+            try {
+                const backup = _tryRecoverFromBackup();
+                if (backup && Array.isArray(backup.messages) && backup.messages.length > messages.length) {
+                    const existingIds = new Set(messages.map(m => String(m.id)));
+                    const newMsgs = backup.messages
+                        .filter(m => !existingIds.has(String(m.id)))
+                        .map(m => ({ ...m, timestamp: new Date(m.timestamp) }));
+                    if (newMsgs.length > 0) {
+                        messages = messages.concat(newMsgs);
+                        showNotification("已恢复 " + newMsgs.length + " 条因窗口切换未保存的消息", "warning", 5000);
+                        setTimeout(function () { try { saveData(); } catch (e) {} }, 500);
+                    }
+                }
+            } catch (mergeErr) {
+                console.warn("[loadData] 检查紧急备份失败:", mergeErr);
+            }
         } else {
             const backup = _tryRecoverFromBackup();
             if (backup && Array.isArray(backup.messages) && backup.messages.length > 0) {
@@ -2047,6 +2065,12 @@ const addMessage = (message) => {
     // 追没追上底部，要在"往数组里塞新消息、改动滚动高度"之前就先判断好，不然滚动高度已经变了，判断就不准了
     const wasCaughtUp = _isCaughtUpToLatest();
     messages.push(message);
+    // 移动浏览器小窗→全屏切换可能重建 WebView，导致页面重新加载。
+    // 收到梦角消息时立即同步备份到 localStorage（不等 500ms 节流），
+    // 防止最新字卡在重建时间窗口内丢失。
+    if (message.sender !== 'user') {
+        try { _backupCriticalData(); } catch (e) {}
+    }
     
     if (wasEmpty) {
         DOMElements.emptyState.style.display = 'none';
