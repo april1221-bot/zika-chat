@@ -176,17 +176,18 @@
         renderMoreMenu();
     }
 
-    // "+" 常驻，不会被输入框里的文字换掉；"发送"按钮完全不要，永远隐藏——
-    // 发消息统一走回车/其它已有路径，这个坑位上只留"+"一个按钮。
-    // 用 setProperty 加 important 优先级来设置显示状态，不能只是普通的 style.display='xxx'——
-    // 因为 styles.css 里有条老规则 #send-btn{display:none!important}（应该是更早某个方案遗留下来的），
-    // 普通内联样式斗不过样式表里的!important，只有内联样式自己也标 important 才压得过去。
-    // 不去动 styles.css 那条规则（受保护文件），从这边把它压制掉就行
+    // 有文字时显示"发送"，没文字时显示"+"。
     function syncTrailingButton() {
         const input = getInput(), plusBtn = getPlusBtn(), sendBtn = getSendBtn();
-        if (!input || !plusBtn) return;
-        plusBtn.style.setProperty('display', 'flex', 'important');
-        if (sendBtn) sendBtn.style.setProperty('display', 'none', 'important');
+        if (!input || !plusBtn || !sendBtn) return;
+        const hasText = input.value.trim().length > 0;
+        if (hasText) {
+            plusBtn.style.setProperty('display', 'none', 'important');
+            sendBtn.style.setProperty('display', 'flex', 'important');
+        } else {
+            plusBtn.style.setProperty('display', 'flex', 'important');
+            sendBtn.style.setProperty('display', 'none', 'important');
+        }
     }
 
     document.addEventListener('DOMContentLoaded', function () {
