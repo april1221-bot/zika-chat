@@ -593,6 +593,7 @@ window.openCoupleSpace=window.openMomentsModal=function(scrollToPostId){
         }
         page.classList.add('cs-open');
         _csSetTab('feed');_csRenderFeed();_updateBigAvatars();
+        _csBindFeedTabs(); // 兜底绑定 feed tab（首次打开时 DOM 可能尚未就绪）
         if(typeof window._annLoadPinned==='function'){
             window._annLoadPinned().then(function(){_updateDaysCounter();});
         }else{_updateDaysCounter();}
@@ -660,12 +661,48 @@ function _csSetTab(tab){
     const btn=document.getElementById('csp-'+tab);
     if(btn)btn.classList.add('cs-pill-on');
 }
+let _csFeedFilter = 'all'; // 'all' | 'partner' | 'mine'
 function _csRenderFeed(){
     const list=document.getElementById('cs-feed-list');if(!list)return;
-    if(!momentsData.posts.length){list.innerHTML=`<div class="cs-empty"><i class="fas fa-wind"></i><div class="cs-empty-label">还没有动态<br>来发第一条吧~</div></div>`;return;}
-    list.innerHTML=momentsData.posts.map(p=>_renderCard(p)).join('');_bindLazy(list);
-    momentsData.posts.forEach(p=>markPostRead(p.id));
+    let posts = momentsData.posts;
+    if (_csFeedFilter === 'partner') {
+        posts = posts.filter(function (p) { return p.type !== 'user'; });
+    } else if (_csFeedFilter === 'mine') {
+        posts = posts.filter(function (p) { return p.type === 'user'; });
+    }
+    if(!posts.length){
+        const emptyMsg = _csFeedFilter === 'partner'
+            ? 'TA还没发动态<br>等TA来更新吧~'
+            : _csFeedFilter === 'mine'
+            ? '你还没发过动态<br>来发第一条吧~'
+            : '还没有动态<br>来发第一条吧~';
+        list.innerHTML='<div class="cs-empty"><i class="fas fa-wind"></i><div class="cs-empty-label">' + emptyMsg + '</div></div>';return;
+    }
+    list.innerHTML=posts.map(p=>_renderCard(p)).join('');_bindLazy(list);
+    posts.forEach(p=>markPostRead(p.id));
 }
+function _csSetFeedTab(tab){
+    _csFeedFilter = tab;
+    document.querySelectorAll('.cs-feed-tab').forEach(function (b) {
+        b.classList.toggle('active', b.dataset.feedTab === tab);
+    });
+    _csRenderFeed();
+}
+// 绑定 feed tab 点击事件（idempotent，避免重复绑定）
+let _csFeedTabsBound = false;
+function _csBindFeedTabs(){
+    if (_csFeedTabsBound) return;
+    var tabs = document.querySelectorAll('.cs-feed-tab');
+    if (!tabs.length) return;
+    tabs.forEach(function (b) {
+        b.addEventListener('click', function () {
+            _csSetFeedTab(b.dataset.feedTab);
+        });
+    });
+    _csFeedTabsBound = true;
+}
+// defer 加载 → DOM 已就绪，直接尝试绑定；同时在 openCoupleSpace 再兜底一次
+_csBindFeedTabs();
 function _csScrollTo(postId){const idx=momentsData.posts.findIndex(p=>p.id===postId);const panel=document.getElementById('cs-panel-feed');if(!panel||idx<0)return;const cards=panel.querySelectorAll('.cs-post');if(cards[idx])cards[idx].scrollIntoView({behavior:'smooth',block:'start'});}
 
 // ─── 发帖 sheet ───
