@@ -19,7 +19,7 @@
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 
     <!-- 留在首屏的 CSS：全局变量 + 开屏页 -->
-    <link rel="stylesheet" href="css/styles.css">
+    <link rel="stylesheet" href="css/styles.css?v=20261014c">
     <link rel="stylesheet" href="css/splash.css">
 
     <script>
@@ -640,6 +640,11 @@ html[data-theme="dark"] #cs-transition-overlay{background:radial-gradient(circle
                 <div class="cs-compose-plus">+</div>
             </div>
             <!-- 帖子列表 -->
+            <div class="cs-feed-tabs" id="cs-feed-tabs">
+                <button class="cs-feed-tab active" data-feed-tab="all">全部</button>
+                <button class="cs-feed-tab" data-feed-tab="partner">他的</button>
+                <button class="cs-feed-tab" data-feed-tab="mine">我的</button>
+            </div>
             <div id="cs-feed-list"></div>
             <div style="height:20px;"></div>
         </div>
@@ -3696,7 +3701,7 @@ html[data-theme="dark"] #cs-transition-overlay{background:radial-gradient(circle
     <!-- == 功能模块 == -->
     <script defer src="js/features/mood.js"></script>
     <script defer src="js/features/envelope.js"></script>
-    <script defer src="js/features/moments.js"></script>
+    <script defer src="js/features/moments.js?v=20261014c"></script>
     <script defer src="js/features/album.js"></script>
     <script defer src="js/features/reply-library.js"></script>
     <script defer src="js/features/theme-editor.js"></script>
