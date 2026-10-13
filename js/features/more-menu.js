@@ -78,6 +78,18 @@
             label: '搞怪',
             ready: false
         },
+        { id: 'dice', iconClass: 'fas fa-dice', label: '骰子', ready: true,
+          action: function () {
+              if (typeof window._sendGameEmoji === 'function') window._sendGameEmoji('dice', 'user');
+              else if (typeof showNotification === 'function') showNotification('功能加载中，请稍后', 'info');
+          }
+        },
+        { id: 'rps', iconClass: 'fas fa-hand-rock', label: '猜拳', ready: true,
+          action: function () {
+              if (typeof window._sendGameEmoji === 'function') window._sendGameEmoji('rps', 'user');
+              else if (typeof showNotification === 'function') showNotification('功能加载中，请稍后', 'info');
+          }
+        },
         // 加回"位置"和"快问快答"这两个（凑够6个，两行各3个/4个，看起来不那么空），
         // 小红书/抖音还是先不加，功能都没做
         { id: 'location', iconClass: 'fas fa-location-dot', label: '位置', ready: false },
