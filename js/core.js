@@ -790,6 +790,7 @@ window.deleteAnniversaryItem = function(id) {
 };
 
 const _BACKUP_PREFIX = 'BACKUP_V1_';
+let _urgentBackupTimer = null;
 function _backupCriticalData() {
     if (window._skipBackup) return;
     try {
@@ -2066,10 +2067,14 @@ const addMessage = (message) => {
     const wasCaughtUp = _isCaughtUpToLatest();
     messages.push(message);
     // 移动浏览器小窗→全屏切换可能重建 WebView，导致页面重新加载。
-    // 收到梦角消息时立即同步备份到 localStorage（不等 500ms 节流），
-    // 防止最新字卡在重建时间窗口内丢失。
+    // 收到梦角消息时节流备份到 localStorage（500ms内只备一次），
+    // 既防止最新字卡在重建时间窗口内丢失，又避免每条消息都全量序列化拖慢回复。
     if (message.sender !== 'user') {
-        try { _backupCriticalData(); } catch (e) {}
+        if (_urgentBackupTimer) clearTimeout(_urgentBackupTimer);
+        _urgentBackupTimer = setTimeout(function () {
+            _urgentBackupTimer = null;
+            try { _backupCriticalData(); } catch (e) {}
+        }, 500);
     }
     
     if (wasEmpty) {
