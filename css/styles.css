@@ -11893,3 +11893,50 @@ body #user-sticker-picker .empty-sticker-tip {
     font-size: 11px;
     color: var(--text-tertiary);
 }
+
+/* ─── 朋友圈 feed 分tab（全部 / 他的 / 我的） ─── */
+.cs-feed-tabs {
+    display: flex;
+    gap: 0;
+    background: var(--primary-bg);
+    border-bottom: 1px solid var(--surface-border);
+    padding: 6px 12px;
+    position: sticky;
+    top: 0;
+    z-index: 5;
+    margin-top: 8px;
+}
+.cs-feed-tab {
+    flex: 1 1 0;
+    border: none;
+    background: transparent;
+    padding: 8px 4px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--text-secondary);
+    cursor: pointer;
+    position: relative;
+    transition: color 0.18s ease;
+    -webkit-tap-highlight-color: transparent;
+}
+.cs-feed-tab:hover {
+    color: var(--text-primary);
+}
+.cs-feed-tab:active {
+    opacity: 0.6;
+}
+.cs-feed-tab.active {
+    color: var(--accent-color);
+    font-weight: 600;
+}
+.cs-feed-tab.active::after {
+    content: '';
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 22px;
+    height: 2.5px;
+    border-radius: 2px;
+    background: var(--accent-color);
+}
