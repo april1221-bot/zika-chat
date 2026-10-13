@@ -1518,10 +1518,82 @@ function initComboMenu() {
             renderMyStickerLibrary();
         } else if (tabId === 'partner-sticker') {
             renderPartnerStickerLibrary();
+        } else if (tabId === 'games') {
+            renderGamesMenu();
         } else {
             renderUserPokeMenu();
         }
     }
+
+    // ── 互动表情：骰子 + 猜拳 ──
+    function renderGamesMenu() {
+        const contentArea = document.getElementById('combo-content-area');
+        if (!contentArea) return;
+        const items = [
+            { id: 'dice',    emoji: '🎲', name: '扔骰子', desc: '1-6 随机点数' },
+            { id: 'rps',     emoji: '✊', name: '猜拳',   desc: '石头/剪刀/布' }
+        ];
+        let html = '<div class="games-menu-grid">';
+        items.forEach(function (it) {
+            html += '<div class="games-menu-item" data-game="' + it.id + '">';
+            html += '<div class="games-menu-emoji">' + it.emoji + '</div>';
+            html += '<div class="games-menu-name">' + it.name + '</div>';
+            html += '<div class="games-menu-desc">' + it.desc + '</div>';
+            html += '</div>';
+        });
+        html += '</div>';
+        contentArea.innerHTML = html;
+        contentArea.querySelectorAll('.games-menu-item').forEach(function (el) {
+            el.addEventListener('click', function () {
+                _sendGameEmoji(el.dataset.game, 'user');
+            });
+        });
+    }
+
+    // 发送互动表情：dice 或 rps
+    // who='user' 是用户主动发，who='partner' 是对方自动发
+    function _sendGameEmoji(gameType, who) {
+        if (typeof addMessage !== 'function') return;
+        const sender = (who === 'user')
+            ? ((typeof settings !== 'undefined' && settings.myName) ? settings.myName : '我')
+            : ((typeof settings !== 'undefined' && settings.partnerName) ? settings.partnerName : '对方');
+        if (gameType === 'dice') {
+            const value = 1 + Math.floor(Math.random() * 6);
+            addMessage({
+                id: Date.now() + Math.random(),
+                sender: sender,
+                text: '',
+                timestamp: new Date(),
+                type: 'game',
+                gameType: 'dice',
+                gameValue: value,
+                status: 'received'
+            });
+            if (who === 'user' && typeof playSound === 'function') playSound('poke');
+        } else if (gameType === 'rps') {
+            const choices = ['rock', 'scissors', 'paper'];
+            const value = choices[Math.floor(Math.random() * 3)];
+            addMessage({
+                id: Date.now() + Math.random(),
+                sender: sender,
+                text: '',
+                timestamp: new Date(),
+                type: 'game',
+                gameType: 'rps',
+                gameValue: value,
+                status: 'received'
+            });
+            // 彩蛋：用户发猜拳→对方下一条回复必定是猜拳
+            if (who === 'user') {
+                window._pendingRockPaper = true;
+            }
+            if (who === 'user' && typeof playSound === 'function') playSound('poke');
+        }
+        // 关闭 picker
+        const picker = document.getElementById('user-sticker-picker');
+        if (picker && who === 'user') picker.classList.remove('active');
+    }
+    window._sendGameEmoji = _sendGameEmoji;
 
     function makeStickerItem(src, onClick) {
         const item = document.createElement('div');
